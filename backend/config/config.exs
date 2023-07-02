@@ -18,7 +18,19 @@ config :expense_sharing_app, ExpenseSharingAppWeb.Endpoint,
     layout: false
   ],
   pubsub_server: ExpenseSharingApp.PubSub,
-  live_view: [signing_salt: "siJGgpMY"]
+  live_view: [signing_salt: "siJGgpMY"],
+  cors: [
+    allowed_origins: [
+      "http://192.168.0.102:3000"
+    ],
+    allowed_methods: ["GET", "POST", "PUT", "DELETE"],
+    allowed_headers: [
+      "content-type",
+      "authorization"
+    ],
+    allow_credentials: true
+  ]
+
 
 # Configures the mailer
 #

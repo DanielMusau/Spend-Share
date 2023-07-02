@@ -17,7 +17,7 @@ defmodule ExpenseSharingApp.Expenses.Expense do
   @doc false
   def changeset(expense, attrs) do
     expense
-    |> cast(attrs, [:name, :amount])
-    |> validate_required([:name, :amount])
+    |> cast(attrs, [:name, :amount, :user_id, :group_id])
+    |> validate_required([:name, :amount, :user_id, :group_id])
   end
 end

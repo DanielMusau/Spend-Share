@@ -11,7 +11,7 @@ defmodule ExpenseSharingAppWeb.ExpenseController do
     render(conn, :index, expenses: expenses)
   end
 
-  def create(conn, %{"expense" => expense_params}) do
+  def create(conn, expense_params) do
     with {:ok, %Expense{} = expense} <- Expenses.create_expense(expense_params) do
       conn
       |> put_status(:created)

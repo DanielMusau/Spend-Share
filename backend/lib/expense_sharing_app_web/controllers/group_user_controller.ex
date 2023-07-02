@@ -11,7 +11,7 @@ defmodule ExpenseSharingAppWeb.GroupUserController do
     render(conn, :index, group_users: group_users)
   end
 
-  def create(conn, %{"group_user" => group_user_params}) do
+  def create(conn, group_user_params) do
     with {:ok, %GroupUser{} = group_user} <- GroupUsers.create_group_user(group_user_params) do
       conn
       |> put_status(:created)

@@ -1,6 +1,7 @@
 defmodule ExpenseSharingAppWeb.Router do
   use ExpenseSharingAppWeb, :router
 
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -8,7 +9,7 @@ defmodule ExpenseSharingAppWeb.Router do
   scope "/api", ExpenseSharingAppWeb do
     pipe_through :api
 
-    resources "/users", UserController, only: [:create]
+    resources "/users", UserController
     resources "/groups", GroupController
     resources "/group_users", GroupUserController
     resources "/expenses", ExpenseController

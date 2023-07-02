@@ -15,7 +15,7 @@ defmodule ExpenseSharingApp.GroupUsers.GroupUser do
   @doc false
   def changeset(group_user, attrs) do
     group_user
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:user_id, :group_id])
+    |> validate_required([:user_id, :group_id ])
   end
 end
