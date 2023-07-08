@@ -6,34 +6,36 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  SignupScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Signup'),
+        title: const Text('Signup'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Your Name'),
+              decoration: const InputDecoration(labelText: 'Your Name'),
             ),
             TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
             ElevatedButton(
               onPressed: () {
                 signup(context);
               },
-              child: Text('Signup'),
+              child: const Text('Signup'),
             ),
           ],
         ),
@@ -46,7 +48,7 @@ class SignupScreen extends StatelessWidget {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    final url = 'http://localhost:4000/api/users';
+    const url = 'http://localhost:4000/api/users';
     final response = await http.post(Uri.parse(url), body: {
       'name': name,
       'email': email,
@@ -58,15 +60,15 @@ class SignupScreen extends StatelessWidget {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Success'),
-          content: Text('Signup successful!'),
+          title: const Text('Success'),
+          content: const Text('Signup successful!'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/login');
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -76,14 +78,14 @@ class SignupScreen extends StatelessWidget {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Signup failed. Please try again.'),
+          title: const Text('Error'),
+          content: const Text('Signup failed. Please try again.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         ),

@@ -1,65 +1,84 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  List<Map<String, dynamic>> expenses = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchExpenses();
-  }
-
-  Future<void> fetchExpenses() async {
+  Future<List<Map<String, dynamic>>> fetchExpenses() async {
     try {
-      final url = 'http://localhost:4000/api/expenses';
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final List<dynamic> expenseData = jsonData['data'];
+      const url = '/expenses';
 
-        expenses = expenseData.cast<Map<String, dynamic>>();
-
-        setState(() {});
-      } else {
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to fetch expenses. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              ),
-            ],
+      Dio getHttpClient() {
+        final dio = Dio(
+          BaseOptions(
+            baseUrl: 'https://expensesharingapp-production.up.railway.app/api',
+            contentType: 'application/json',
+            connectTimeout: const Duration(seconds: 60),
+            receiveTimeout: const Duration(seconds: 60),
+            headers: <String, dynamic>{
+              'Accept': 'application/json',
+            },
           ),
         );
+
+        dio.interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (options, handler) {
+              return handler.next(options);
+            },
+          ),
+        );
+        return dio;
+      }
+
+      Response response = await getHttpClient().get(url);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.toString());
+        final List<dynamic> expenseData = jsonData['data'];
+
+        final expenses = expenseData.cast<Map<String, dynamic>>();
+        return expenses;
+      } else {
+        return [];
+        // showDialog(
+        //   context: context,
+        //   builder: (_) => AlertDialog(
+        //     title: const Text('Error'),
+        //     content: const Text('Failed to fetch expenses. Please try again.'),
+        //     actions: [
+        //       TextButton(
+        //         onPressed: () {
+        //           Navigator.pop(context);
+        //         },
+        //         child: const Text('OK'),
+        //       ),
+        //     ],
+        //   ),
+        // );
       }
     } catch (error) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Error'),
-          content: Text('An error occurred: $error'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
+      return [];
+      // showDialog(
+      //   context: context,
+      //   builder: (_) => AlertDialog(
+      //     title: const Text('Error'),
+      //     content: Text('An error occurred: $error'),
+      //     actions: [
+      //       TextButton(
+      //         onPressed: () {
+      //           Navigator.pop(context);
+      //         },
+      //         child: const Text('OK'),
+      //       ),
+      //     ],
+      //   ),
+      // );
     }
   }
 
@@ -67,35 +86,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: const Text('Dashboard'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
               'Expenses:',
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: expenses.length,
-              itemBuilder: (context, index) {
-                final expense = expenses[index];
-                final amount = expense['amount'];
-                final name = expense['name'];
+          FutureBuilder<List<Map<String, dynamic>>>(
+              future: fetchExpenses(),
+              initialData: const [],
+              builder: (context, snapshot) {
+                final expenses = snapshot.data!;
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: expenses.length,
+                    itemBuilder: (context, index) {
+                      final expense = expenses[index];
+                      final amount = expense['amount'];
+                      final name = expense['name'];
 
-                return ListTile(
-                  title: Text(name),
-                  subtitle: Text('Amount: $amount'),
+                      return ListTile(
+                        title: Text(name),
+                        subtitle: Text('Amount: $amount'),
+                      );
+                    },
+                  ),
                 );
-              },
-            ),
-          ),
+              }),
         ],
-      ),
-    );
-  }
+     ),
+);
+}
 }

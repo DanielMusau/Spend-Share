@@ -6,8 +6,10 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  LoginScreen({super.key});
+
   void login(BuildContext context) async {
-    final url = '${APIConfig.baseUrl}/login';
+    const url = '${APIConfig.baseUrl}/login';
     final response = await http.post(Uri.parse(url), body: {
       'email': _emailController.text,
       'password': _passwordController.text,
@@ -25,14 +27,14 @@ class LoginScreen extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Login Error'),
-            content: Text('Failed to login. Please try again.'),
+            title: const Text('Login Error'),
+            content: const Text('Failed to login. Please try again.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -45,26 +47,26 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
             ElevatedButton(
               onPressed: () {
                 login(context);
               },
-              child: Text('Login'),
+              child: const Text('Login'),
             ),
           ],
         ),

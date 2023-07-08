@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 class CreateGroupScreen extends StatelessWidget {
   final TextEditingController _groupNameController = TextEditingController();
 
+  CreateGroupScreen({super.key});
+
   void createGroup(BuildContext context) async {
     final String groupName = _groupNameController.text;
 
@@ -26,15 +28,15 @@ class CreateGroupScreen extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Group Created'),
-              content: Text('The group has been created successfully.'),
+              title: const Text('Group Created'),
+              content: const Text('The group has been created successfully.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -46,14 +48,14 @@ class CreateGroupScreen extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error'),
-              content: Text('Failed to create the group. Please try again.'),
+              title: const Text('Error'),
+              content: const Text('Failed to create the group. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -66,14 +68,14 @@ class CreateGroupScreen extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('An error occurred. Please try again later.'),
+            title: const Text('Error'),
+            content: const Text('An error occurred. Please try again later.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -86,21 +88,21 @@ class CreateGroupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Group'),
+        title: const Text('Create Group'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextFormField(
               controller: _groupNameController,
-              decoration: InputDecoration(labelText: 'Group Name'),
+              decoration: const InputDecoration(labelText: 'Group Name'),
             ),
             ElevatedButton(
               onPressed: () {
                 createGroup(context);
               },
-              child: Text('Create Group'),
+              child: const Text('Create Group'),
             ),
           ],
         ),

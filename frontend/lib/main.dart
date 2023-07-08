@@ -22,10 +22,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => DashboardScreen(),
+        '/': (context) => const DashboardScreen(),
         '/signup': (context) => SignupScreen(),
         '/login': (context) => LoginScreen(),
-        '/dashboard': (context) => DashboardScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
         '/create-group': (context) => CreateGroupScreen(),
         '/create-expense': (context) => CreateExpenseScreen(),
       },
