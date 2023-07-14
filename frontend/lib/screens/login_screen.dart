@@ -1,46 +1,21 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:frontend/config/api_config.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  LoginScreen({super.key});
-
-  void login(BuildContext context) async {
-    const url = '${APIConfig.baseUrl}/login';
-    final response = await http.post(Uri.parse(url), body: {
-      'email': _emailController.text,
-      'password': _passwordController.text,
-    });
-
-    if (response.statusCode == 200) {
-      // Login successful, save user session and navigate to the dashboard screen
-      final token = response.body; // Assuming the API returns a token
-      // Save the token to shared preferences for future use
-      // ...
-      Navigator.pushNamed(context, '/dashboard');
-    } else {
-      // Handle login error
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Login Error'),
-            content: const Text('Failed to login. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+  LoginScreen() {
+    // Initialize the text controllers
+    _emailController.text = '';
+    _passwordController.text = '';
   }
 
   @override
@@ -63,8 +38,83 @@ class LoginScreen extends StatelessWidget {
               obscureText: true,
             ),
             ElevatedButton(
-              onPressed: () {
-                login(context);
+              onPressed: () async {
+                // Get the user from the database
+                final email = _emailController.text;
+                final password = _passwordController.text;
+                const url = '/login';
+
+                Dio getHttpClient() {
+                  final dio = Dio(
+                    BaseOptions(
+                      baseUrl: 'https://expensesharingapp-production.up.railway.app/api',
+                      contentType: 'application/json',
+                      connectTimeout: const Duration(seconds: 60),
+                      receiveTimeout: const Duration(seconds: 60),
+                      headers: <String, dynamic>{
+                        'Accept': 'application/json',
+                      },
+                    ),
+                  );
+
+                  
+                  dio.interceptors.add(
+                    InterceptorsWrapper(
+                      onRequest: (options, handler) {
+                        return handler.next(options);
+                      },
+                    ),
+                  );
+                  return dio;
+                }
+
+                Response response = await getHttpClient().post(
+                  url,
+                  data: {
+                    'user': {
+                      'email': email,
+                      'password': password,
+                    },
+                  },
+                );
+
+                // Check the response status code
+                if (response.statusCode == 200) {
+                  // Login successful
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Success'),
+                      content: const Text('Login successful!'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/dashboard');
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Login failed
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Error'),
+                      content: const Text('Login failed. Please try again.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
               child: const Text('Login'),
             ),
@@ -74,4 +124,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-

@@ -70,17 +70,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
       //     title: const Text('Error'),
       //     content: Text('An error occurred: $error'),
       //     actions: [
-      //       TextButton(
-      //         onPressed: () {
-      //           Navigator.pop(context);
-      //         },
-      //         child: const Text('OK'),
-      //       ),
-      //     ],
-      //   ),
-      // );
+        //       TextButton(
+        //         onPressed: () {
+        //           Navigator.pop(context);
+        //         },
+        //         child: const Text('OK'),
+        //       ),
+        //     ],
+        //   ),
+        // );
     }
   }
+
+  Future<String> getUser(String userId) async {
+  final url = '/users/$userId';
+
+  Dio getHttpClient() {
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: 'https://expensesharingapp-production.up.railway.app/api',
+        contentType: 'application/json',
+        connectTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
+        headers: <String, dynamic>{
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          return handler.next(options);
+        },
+      ),
+    );
+    return dio;
+  }
+
+  Response response = await getHttpClient().get(url);
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.toString());
+    final name = jsonData['name'];
+    return name;
+  } else {
+    return 'Unknown User';
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,17 +147,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       final expense = expenses[index];
                       final amount = expense['amount'];
                       final name = expense['name'];
+                      final userId = expense['user_id'];
+                      final user = userId.toString();
+
 
                       return ListTile(
                         title: Text(name),
-                        subtitle: Text('Amount: $amount'),
+                        subtitle: Text(
+                            'You owe ${getUser(user)} this $amount of money'),
                       );
                     },
                   ),
                 );
               }),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the create_group_screen
+                  Navigator.pushNamed(context, '/create-group');
+                },
+                child: const Text('Create Group'),
+              ),
         ],
-     ),
-);
-}
+      ),
+    );
+  }
 }

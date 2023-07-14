@@ -1,87 +1,19 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-class CreateGroupScreen extends StatelessWidget {
-  final TextEditingController _groupNameController = TextEditingController();
+class CreateGroupScreen extends StatefulWidget {
+  const CreateGroupScreen({super.key});
 
-  CreateGroupScreen({super.key});
+  @override
+  _CreateGroupScreenState createState() => _CreateGroupScreenState();
+}
 
-  void createGroup(BuildContext context) async {
-    final String groupName = _groupNameController.text;
+class _CreateGroupScreenState extends State<CreateGroupScreen> {
+  final TextEditingController _nameController = TextEditingController();
 
-    // Prepare the request body
-    Map<String, dynamic> requestBody = {
-      'name': groupName,
-    };
-
-    // Send a POST request to create a new group
-    try {
-      const url = 'http://localhost:4000/api/groups';
-      final response = await http.post(
-        Uri.parse(url),
-        body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        // Group created successfully, show a success message
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Group Created'),
-              content: const Text('The group has been created successfully.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        // Show an error message if the request fails
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: const Text('Failed to create the group. Please try again.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } catch (e) {
-      // Handle any exceptions that occur during the request
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: const Text('An error occurred. Please try again later.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+  CreateGroupScreen() {
+    // Initialize the text controllers
+    _nameController.text = '';
   }
 
   @override
@@ -95,14 +27,85 @@ class CreateGroupScreen extends StatelessWidget {
         child: Column(
           children: [
             TextFormField(
-              controller: _groupNameController,
+              controller: _nameController,
               decoration: const InputDecoration(labelText: 'Group Name'),
             ),
             ElevatedButton(
-              onPressed: () {
-                createGroup(context);
+              onPressed: () async {
+                // Get the user from the database
+                final name = _nameController.text;
+                const url = '/groups';
+
+                Dio getHttpClient() {
+                  final dio = Dio(
+                    BaseOptions(
+                      baseUrl: 'https://expensesharingapp-production.up.railway.app/api',
+                      contentType: 'application/json',
+                      connectTimeout: const Duration(seconds: 60),
+                      receiveTimeout: const Duration(seconds: 60),
+                      headers: <String, dynamic>{
+                        'Accept': 'application/json',
+                      },
+                    ),
+                  );
+
+                  
+                  dio.interceptors.add(
+                    InterceptorsWrapper(
+                      onRequest: (options, handler) {
+                        return handler.next(options);
+                      },
+                    ),
+                  );
+                  return dio;
+                }
+
+                Response response = await getHttpClient().post(
+                  url,
+                  data: {
+                      'name': name,
+                  },
+                );
+
+                // Check the response status code
+                if (response.statusCode == 201) {
+                  // Group Creation successful
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Success'),
+                      content: const Text('Group Created successfully!'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/dashboard');
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Login failed
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Error'),
+                      content: const Text('Group Creation failed. Please try again.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
-              child: const Text('Create Group'),
+              child: const Text('Login'),
             ),
           ],
         ),

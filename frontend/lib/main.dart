@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const DashboardScreen(),
-        '/signup': (context) => SignupScreen(),
-        '/login': (context) => LoginScreen(),
+        '/signup': (context) => const SignupScreen(),
+        '/login': (context) => const LoginScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/create-group': (context) => CreateGroupScreen(),
         '/create-expense': (context) => CreateExpenseScreen(),
